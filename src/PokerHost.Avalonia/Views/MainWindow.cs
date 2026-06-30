@@ -251,7 +251,7 @@ public sealed class MainWindow : Window
             FontFamily = UiFont,
             ItemsSource = new[]
             {
-                MenuItem("Load Selected", (_, _) => LoadSelectedArchive()),
+                MenuItem("Load Selected", async (_, _) => await LoadSelectedArchive()),
                 MenuItem("Open Ledger", (_, _) => ShowLedgerScreen()),
                 MenuItem("Export Session JSON", async (_, _) => await ExportSelectedArchiveJson()),
                 MenuItem("Delete Selected Sessions", async (_, _) => await DeleteSelectedArchive())
@@ -599,7 +599,7 @@ public sealed class MainWindow : Window
         startStack.Children.Add(Section("Stakes", new StackPanel { Spacing = 8, Children = { _blindRows, SmallButton("+", (_, _) => AddMoneyRow(_blindRows, _blindBoxes, "Blind")) } }));
         startStack.Children.Add(Section("Chip Denominations", new StackPanel { Spacing = 8, Children = { _denomRows, SmallButton("+", (_, _) => AddMoneyRow(_denomRows, _denomBoxes, "Chip")) } }));
         var startFooter = new StackPanel { Spacing = 8 };
-        startFooter.Children.Add(Button("Start Session", (_, _) => StartSession(), 150));
+        startFooter.Children.Add(Button("Start Session", async (_, _) => await StartSession(), 150));
         if (!string.IsNullOrWhiteSpace(_startNotice))
         {
             startFooter.Children.Add(new TextBlock { Text = _startNotice, Foreground = SuccessBrush, FontFamily = UiFont, TextWrapping = TextWrapping.Wrap });
@@ -656,7 +656,7 @@ public sealed class MainWindow : Window
             Orientation = Orientation.Horizontal,
             Margin = new Avalonia.Thickness(0, 8, 0, 0)
         };
-        var loadButton = ArchiveButton("Load Selected", (_, _) => LoadSelectedArchive(), 135);
+        var loadButton = ArchiveButton("Load Selected", async (_, _) => await LoadSelectedArchive(), 135);
         var refreshButton = ArchiveButton("Refresh", (_, _) => RefreshArchive(), 105);
         var deleteButton = ArchiveButton("Delete Selected", async (_, _) => await DeleteSelectedArchive(), 135);
         var ledgerButton = ArchiveButton("Open Ledger", (_, _) => ShowLedgerScreen(), 120);
@@ -1190,15 +1190,26 @@ public sealed class MainWindow : Window
         }
     }
 
-    private void StartSession()
+    private async Task StartSession()
+    {
+        await TryStartSession(showValidation: true);
+    }
+
+    private async Task<bool> TryStartSession(bool showValidation)
     {
         var blinds = _blindBoxes.Select(box => ParseMoneyOrZero(box.Text)).Where(v => v > 0).ToList();
         var denoms = _denomBoxes.Select(box => ParseMoneyOrZero(box.Text)).Where(v => v > 0).Distinct().OrderBy(v => v).ToList();
         if (blinds.Count == 0 || denoms.Count == 0)
         {
-            return;
+            if (showValidation)
+            {
+                await ShowInfo("Start Session", "Enter at least one blind/ante and one chip denomination before starting the session.");
+            }
+
+            return false;
         }
 
+        await OfferSaveSetupPreset(blinds, denoms);
         _session = new PokerSession
         {
             Name = string.IsNullOrWhiteSpace(_sessionName.Text) ? $"Poker Session {DateTime.Now:yyyy-MM-dd}" : _sessionName.Text.Trim(),
@@ -1214,13 +1225,13 @@ public sealed class MainWindow : Window
         _redoStack.Clear();
         MarkDirty();
         ShowPlayerScreen();
+        return true;
     }
 
     private void ToggleCashOutScreen()
     {
         if (_session is null)
         {
-            StartSession();
             return;
         }
 
@@ -2050,21 +2061,23 @@ public sealed class MainWindow : Window
         ShowStartScreen();
     }
 
-    private void LoadSelectedArchive()
+    private async Task LoadSelectedArchive()
     {
         var item = GetSelectedArchiveItems().FirstOrDefault();
         if (item is null)
         {
+            await ShowInfo("Load Session", "Select a saved session to load.");
             return;
         }
-        LoadArchiveItemIfEditable(item);
+        await LoadArchiveItemIfEditable(item);
     }
 
-    private void LoadArchiveItemIfEditable(SessionArchiveItem item)
+    private async Task<bool> LoadArchiveItemIfEditable(SessionArchiveItem item)
     {
         if (item.IsReadOnly || IsReadOnlySessionFile(item.Path))
         {
-            return;
+            await ShowInfo("Load Session", "This session is finalized and read-only. Use Open Ledger to review it, or export a copy if you need the data elsewhere.");
+            return false;
         }
 
         _session = _store.LoadSession(item.Path);
@@ -2074,6 +2087,7 @@ public sealed class MainWindow : Window
         _redoStack.Clear();
         Title = "PokerHost";
         ShowPlayerScreen();
+        return true;
     }
 
     private static bool IsReadOnlySessionFile(string path)
@@ -2401,6 +2415,87 @@ public sealed class MainWindow : Window
         }
     }
 
+    private async Task OfferSaveSetupPreset(List<decimal> blinds, List<decimal> denoms)
+    {
+        EnsureSetupPresetSlots();
+        if (_settings.SetupPresets.Any(preset => SetupPresetMatches(preset, blinds, denoms)))
+        {
+            return;
+        }
+
+        var emptySlot = _settings.SetupPresets.FindIndex(preset => !HasSetupPreset(preset));
+        if (emptySlot < 0)
+        {
+            return;
+        }
+
+        if (!await Confirm("Save Setup Preset", "Save these blinds and chip denominations as a setup preset?", "Save"))
+        {
+            return;
+        }
+
+        await SaveSetupPreset(emptySlot, blinds, denoms, requireOverwriteConfirm: false);
+    }
+
+    private async Task SaveCurrentSetupPreset(int slot)
+    {
+        var (blinds, denoms) = CurrentSetupValues();
+        if (blinds.Count == 0 || denoms.Count == 0)
+        {
+            await ShowInfo("Setup Preset", "Enter at least one blind/ante and one chip denomination before saving a preset.");
+            return;
+        }
+
+        await SaveSetupPreset(slot, blinds, denoms, requireOverwriteConfirm: true);
+    }
+
+    private async Task SaveSetupPreset(int slot, List<decimal> blinds, List<decimal> denoms, bool requireOverwriteConfirm)
+    {
+        EnsureSetupPresetSlots();
+        var current = _settings.SetupPresets[slot];
+        if (requireOverwriteConfirm && HasSetupPreset(current))
+        {
+            var name = string.IsNullOrWhiteSpace(current.Name) ? $"Preset {slot + 1}" : current.Name;
+            if (!await Confirm("Overwrite Setup Preset", $"Replace \"{name}\" with the current setup?", "Replace"))
+            {
+                return;
+            }
+        }
+
+        var initialName = string.IsNullOrWhiteSpace(current.Name)
+            ? SuggestedSetupPresetName(blinds)
+            : current.Name;
+        var presetName = await PromptText("Preset name", "", initialName, compact: true);
+        if (presetName is null)
+        {
+            return;
+        }
+
+        _settings.SetupPresets[slot] = new SetupPreset
+        {
+            Name = string.IsNullOrWhiteSpace(presetName) ? $"Preset {slot + 1}" : presetName.Trim(),
+            Blinds = blinds.ToList(),
+            Denominations = denoms.ToList()
+        };
+        _store.SaveSettings(_settings);
+        RefreshPresets();
+    }
+
+    private (List<decimal> blinds, List<decimal> denoms) CurrentSetupValues()
+    {
+        var blinds = _blindBoxes
+            .Select(box => ParseMoneyOrZero(box.Text))
+            .Where(v => v > 0)
+            .ToList();
+        var denoms = _denomBoxes
+            .Select(box => ParseMoneyOrZero(box.Text))
+            .Where(v => v > 0)
+            .Distinct()
+            .OrderBy(v => v)
+            .ToList();
+        return (blinds, denoms);
+    }
+
     private async Task ManageSetupPresets()
     {
         EnsureSetupPresetSlots();
@@ -2408,7 +2503,7 @@ public sealed class MainWindow : Window
         var dialog = new Window
         {
             Title = "Manage Setup Presets",
-            Width = 620,
+            Width = 780,
             Height = 300,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             Background = PageBrush
@@ -2422,6 +2517,11 @@ public sealed class MainWindow : Window
                 var slot = i;
                 var preset = _settings.SetupPresets[i];
                 var hasPreset = HasSetupPreset(preset);
+                var saveButton = Button("Save Current", async (_, _) =>
+                {
+                    await SaveCurrentSetupPreset(slot);
+                    RebuildRows();
+                }, 110);
                 var applyButton = Button("Apply", (_, _) => ApplyPreset(_settings.SetupPresets[slot]), 80);
                 applyButton.IsEnabled = hasPreset;
                 var renameButton = Button("Rename", async (_, _) =>
@@ -2439,7 +2539,7 @@ public sealed class MainWindow : Window
 
                 var row = new Grid
                 {
-                    ColumnDefinitions = new ColumnDefinitions("80,*,80,90,80"),
+                    ColumnDefinitions = new ColumnDefinitions("80,*,110,80,90,80"),
                     ColumnSpacing = 10,
                     Children =
                     {
@@ -2451,9 +2551,10 @@ public sealed class MainWindow : Window
                             TextWrapping = TextWrapping.Wrap,
                             VerticalAlignment = VerticalAlignment.Center
                         }, 1),
-                        GridCell(applyButton, 2),
-                        GridCell(renameButton, 3),
-                        GridCell(deleteButton, 4)
+                        GridCell(saveButton, 2),
+                        GridCell(applyButton, 3),
+                        GridCell(renameButton, 4),
+                        GridCell(deleteButton, 5)
                     }
                 };
                 rows.Children.Add(row);
@@ -2522,6 +2623,28 @@ public sealed class MainWindow : Window
     private static bool HasSetupPreset(SetupPreset preset)
     {
         return preset.Blinds.Any(v => v > 0) && preset.Denominations.Any(v => v > 0);
+    }
+
+    private static bool SetupPresetMatches(SetupPreset preset, IReadOnlyList<decimal> blinds, IReadOnlyList<decimal> denoms)
+    {
+        if (!HasSetupPreset(preset))
+        {
+            return false;
+        }
+
+        return SameMoneySequence(preset.Blinds.Where(v => v > 0).ToList(), blinds)
+            && SameMoneySequence(preset.Denominations.Where(v => v > 0).Distinct().OrderBy(v => v).ToList(), denoms);
+    }
+
+    private static bool SameMoneySequence(IReadOnlyList<decimal> left, IReadOnlyList<decimal> right)
+    {
+        return left.Count == right.Count && left.Zip(right).All(pair => pair.First == pair.Second);
+    }
+
+    private static string SuggestedSetupPresetName(IEnumerable<decimal> blinds)
+    {
+        var parts = blinds.Select(Money.Key).ToList();
+        return parts.Count == 0 ? "Preset" : string.Join("/", parts);
     }
 
     private static string PresetSummary(SetupPreset preset)
@@ -3878,13 +4001,13 @@ public sealed class MainWindow : Window
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Background = Brushes.Transparent
             };
-            row.PointerPressed += (_, e) =>
+            row.PointerPressed += async (_, e) =>
             {
                 var point = e.GetCurrentPoint(row);
                 if (point.Properties.IsLeftButtonPressed && e.ClickCount == 2)
                 {
                     _archiveList.SelectedItem = item;
-                    LoadArchiveItemIfEditable(item);
+                    await LoadArchiveItemIfEditable(item);
                     e.Handled = true;
                     return;
                 }

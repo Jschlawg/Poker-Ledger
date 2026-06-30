@@ -14,12 +14,13 @@ public sealed class ReceiptExporter
     public string Export(PokerSession session)
     {
         var folderName = $"{session.StartedAt:yyyyMMdd-HHmm}_{JsonStore.SafeFilePart(session.Name)}";
-        var target = Path.Combine(_paths.ReceiptsDirectory, folderName);
+        var exportTime = DateTimeOffset.Now;
+        var target = UniqueReceiptFolderPath(_paths.ReceiptsDirectory, folderName, exportTime);
         Directory.CreateDirectory(target);
 
         var exportEvent = new SessionEvent
         {
-            Time = DateTimeOffset.Now,
+            Time = exportTime,
             Action = "Export",
             Detail = $"Receipts written to {target}"
         };
@@ -44,6 +45,26 @@ public sealed class ReceiptExporter
         return target;
     }
 
+    private static string UniqueReceiptFolderPath(string receiptRoot, string folderName, DateTimeOffset exportTime)
+    {
+        var target = Path.Combine(receiptRoot, folderName);
+        if (!Directory.Exists(target) && !File.Exists(target))
+        {
+            return target;
+        }
+
+        var stampedName = $"{folderName}_{exportTime:yyyyMMdd-HHmmss}";
+        target = Path.Combine(receiptRoot, stampedName);
+        var suffix = 2;
+        while (Directory.Exists(target) || File.Exists(target))
+        {
+            target = Path.Combine(receiptRoot, $"{stampedName}_{suffix}");
+            suffix++;
+        }
+
+        return target;
+    }
+
     private static string UniquePlayerReceiptPath(string targetFolder, Player player, HashSet<string> usedReceiptNames)
     {
         var baseName = JsonStore.SafeFilePart(player.Name);
@@ -59,12 +80,11 @@ public sealed class ReceiptExporter
 
     private static void WriteReadOnly(string path, string content)
     {
-        if (File.Exists(path))
+        using (var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+        using (var writer = new StreamWriter(stream))
         {
-            File.SetAttributes(path, File.GetAttributes(path) & ~FileAttributes.ReadOnly);
+            writer.Write(content);
         }
-
-        File.WriteAllText(path, content);
         File.SetAttributes(path, File.GetAttributes(path) | FileAttributes.ReadOnly);
     }
 
