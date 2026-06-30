@@ -1,12 +1,12 @@
 # PokerHost Avalonia Port
 
-This folder is the C# + Avalonia rewrite of PokerHost. It is intended to replace the current PowerShell/WinForms prototype with a cross-platform desktop app for Windows and macOS, with Linux builds possible later.
+This folder is the C# + Avalonia rewrite of PokerHost. Development and support are focused on Windows only.
 
 ## Current Port Scope
 
 Implemented in the Avalonia port:
 
-- Cross-platform Avalonia desktop project structure.
+- Avalonia desktop project structure for the Windows-focused app.
 - AppData-compatible storage under `PokerHost/data` and `PokerHost/receipts`.
 - Session/player/transaction/cash-out data models matching the existing JSON shape.
 - Session archive load/save/delete and ledger viewing.
@@ -36,15 +36,7 @@ dotnet restore .\PokerHost.sln
 dotnet run --project .\src\PokerHost.Avalonia\PokerHost.Avalonia.csproj
 ```
 
-Publish examples:
-
-```powershell
-dotnet publish .\src\PokerHost.Avalonia\PokerHost.Avalonia.csproj -c Release -r win-x64 --self-contained true
-dotnet publish .\src\PokerHost.Avalonia\PokerHost.Avalonia.csproj -c Release -r osx-arm64 --self-contained true
-dotnet publish .\src\PokerHost.Avalonia\PokerHost.Avalonia.csproj -c Release -r osx-x64 --self-contained true
-```
-
-Or publish all primary desktop targets:
+Publish:
 
 ```powershell
 .\src\PokerHost.Avalonia\Publish-PokerHost.ps1

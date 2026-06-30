@@ -1,5 +1,5 @@
 param(
-    [string[]]$Runtime = @("win-x64", "osx-x64", "osx-arm64"),
+    [string[]]$Runtime = @("win-x64"),
     [switch]$NoSingleFile
 )
 

@@ -2,7 +2,7 @@
 
 PokerHost is a desktop app for tracking a private poker home-game session: setup presets, players, buy-ins, rebuys, cash-outs, balance checks, session archives, and read-only text receipts.
 
-The app is currently built with C#/.NET 8 and Avalonia. It is developed primarily on Windows, with the project structure kept portable for macOS and Linux publishing targets.
+The app is currently built with C#/.NET 8 and Avalonia. Development and support are focused on Windows only.
 
 ## Features
 
@@ -18,8 +18,7 @@ The app is currently built with C#/.NET 8 and Avalonia. It is developed primaril
 ## Requirements
 
 - .NET 8 SDK for development.
-- Windows 11 is the current primary target.
-- macOS and Linux builds are possible through Avalonia runtime identifiers, but should be tested on those systems before release.
+- Windows 11 is the supported target.
 
 ## Run From Source
 
@@ -42,10 +41,8 @@ dotnet test .\PokerHost.sln
 
 ## Publish
 
-For a Windows x64 executable:
-
 ```powershell
-.\src\PokerHost.Avalonia\Publish-PokerHost.ps1 -Runtime win-x64
+.\src\PokerHost.Avalonia\Publish-PokerHost.ps1
 ```
 
 Published builds are written to:
@@ -54,7 +51,7 @@ Published builds are written to:
 dist/
 ```
 
-The publish script also accepts other runtime identifiers, for example `osx-x64`, `osx-arm64`, and `linux-x64`.
+The default publish target is `win-x64`.
 
 ## Data Storage
 
