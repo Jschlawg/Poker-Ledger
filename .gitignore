@@ -1,0 +1,37 @@
+# Build output
+bin/
+obj/
+dist/
+out/
+publish/
+
+# IDE/editor state
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local PokerHost app data and audit artifacts
+data/
+receipts/
+logs/
+.audit-appdata*/
+codex-app-screenshot*.png
+README.txt
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.orig
+TestResults/
+*.trx
