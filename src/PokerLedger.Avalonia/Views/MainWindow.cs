@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Styling;
 using Avalonia.Threading;
@@ -200,7 +201,7 @@ public sealed class MainWindow : Window
         ApplyContrastMode(_settings.ContrastMode);
 
         Title = "Poker Ledger";
-        Icon = new WindowIcon("Assets/PokerLedger.ico");
+        Icon = LoadWindowIcon();
         Width = 1180;
         Height = 760;
         MinWidth = 960;
@@ -1014,6 +1015,23 @@ public sealed class MainWindow : Window
 
         PokerCalculator.SyncPlayerCashOutRows(_session, _cashOutPlayer);
         _cashOutChipPanel.Children.Add(Label("Player: " + _cashOutPlayer.Name));
+
+        var manualTotal = Themed(new TextBox
+        {
+            Text = _cashOutPlayer.ManualCashOut.HasValue ? _cashOutPlayer.ManualCashOut.Value.ToString("0.##") : "",
+            TextAlignment = Avalonia.Media.TextAlignment.Right
+        }, 150);
+        AttachNumericFilter(manualTotal);
+        manualTotal.GotFocus += (_, _) => PushUndoSnapshot();
+        manualTotal.TextChanged += (_, _) =>
+        {
+            _cashOutPlayer.ManualCashOut = string.IsNullOrWhiteSpace(manualTotal.Text)
+                ? null
+                : ParseMoneyOrZero(manualTotal.Text);
+            MarkDirty();
+            RefreshCashOutScreenValues();
+        };
+
         _cashOutChipPanel.Children.Add(new Grid
         {
             ColumnDefinitions = new ColumnDefinitions("150,120,120"),
@@ -1034,6 +1052,7 @@ public sealed class MainWindow : Window
             {
                 var count = ParseIntOrZero(box.Text);
                 PokerCalculator.SetCashOutCount(_session, _cashOutPlayer, row.Denomination, count);
+                manualTotal.Text = "";
                 value.Text = Money.Format(row.Denomination * count);
                 MarkDirty();
                 RefreshCashOutScreenValues();
@@ -1059,6 +1078,20 @@ public sealed class MainWindow : Window
         _cashOutPreview.Margin = new Avalonia.Thickness(0, 8, 0, 0);
         Detach(_cashOutPreview);
         _cashOutChipPanel.Children.Add(_cashOutPreview);
+        var customCashOutLabel = Label("Custom cash out");
+        customCashOutLabel.MinWidth = 170;
+        _cashOutChipPanel.Children.Add(new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 8,
+            Margin = new Avalonia.Thickness(0, 4, 0, 0),
+            Children =
+            {
+                customCashOutLabel,
+                Label("$"),
+                manualTotal
+            }
+        });
         _cashOutChipPanel.Children.Add(Button("Cash Out Player", (_, _) =>
         {
             var player = _cashOutPlayer;
@@ -1308,10 +1341,33 @@ public sealed class MainWindow : Window
             return;
         }
 
+        var cleanDenoms = denoms.Distinct().OrderBy(v => v).ToList();
+        var affectedPlayers = PokerCalculator.PlayersWithCashOutsOutsideDenominations(_session, cleanDenoms);
+        if (affectedPlayers.Count > 0)
+        {
+            var names = string.Join(", ", affectedPlayers.Select(player => player.Name).Take(4));
+            if (affectedPlayers.Count > 4)
+            {
+                names += $", and {affectedPlayers.Count - 4} more";
+            }
+
+            var message = "Some existing chip-count cash-outs use denominations being removed.\n\n"
+                + $"Affected players: {names}\n\n"
+                + "Poker Ledger will preserve their current cash-out totals as custom cash-out totals before updating denominations. Continue?";
+            if (!await Confirm("Edit Chip Denominations", message, "Update"))
+            {
+                return;
+            }
+        }
+
         PushUndoSnapshot();
-        _session.ChipDenominations = denoms.Distinct().OrderBy(v => v).ToList();
-        PokerCalculator.SyncAllCashOutRows(_session);
-        PokerCalculator.AddHistory(_session, "Chip Denominations Updated", string.Join(", ", _session.ChipDenominations.Select(Money.Format)));
+        PokerCalculator.ApplyChipDenominations(_session, cleanDenoms, preserveAffectedCashOutTotals: affectedPlayers.Count > 0);
+        var detail = string.Join(", ", _session.ChipDenominations.Select(Money.Format));
+        if (affectedPlayers.Count > 0)
+        {
+            detail += "; preserved cash-out totals for " + string.Join(", ", affectedPlayers.Select(player => player.Name));
+        }
+        PokerCalculator.AddHistory(_session, "Chip Denominations Updated", detail);
         MarkDirty();
         RefreshPlayerLists();
         if (_currentScreen == "cashout")
@@ -2342,6 +2398,7 @@ public sealed class MainWindow : Window
                         {
                             row.Count = 0;
                         }
+                        _cashOutPlayer.ManualCashOut = null;
                     }
                     MarkDirty();
                     RefreshCashOutScreenValues();
@@ -2871,8 +2928,8 @@ public sealed class MainWindow : Window
         var dialog = new Window
         {
             Title = title,
-            Width = 430,
-            Height = 170,
+            Width = 520,
+            Height = 230,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             Background = PageBrush
         };
@@ -3726,6 +3783,19 @@ public sealed class MainWindow : Window
         ScrollViewer.SetHorizontalScrollBarVisibility(textBox, Avalonia.Controls.Primitives.ScrollBarVisibility.Auto);
         ScrollViewer.SetVerticalScrollBarVisibility(textBox, Avalonia.Controls.Primitives.ScrollBarVisibility.Auto);
         return textBox;
+    }
+
+    private static WindowIcon? LoadWindowIcon()
+    {
+        try
+        {
+            using var iconStream = AssetLoader.Open(new Uri("avares://PokerLedger/Assets/PokerLedger.ico"));
+            return new WindowIcon(iconStream);
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     private static TextBox NoteBox(string text, double height)

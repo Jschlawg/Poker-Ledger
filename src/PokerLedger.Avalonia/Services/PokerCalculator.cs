@@ -57,6 +57,40 @@ public static class PokerCalculator
             .ToList();
     }
 
+    public static List<Player> PlayersWithCashOutsOutsideDenominations(PokerSession session, IEnumerable<decimal> denominations)
+    {
+        var denominationKeys = denominations
+            .Where(d => d > 0)
+            .Select(Money.Key)
+            .ToHashSet(StringComparer.Ordinal);
+
+        return session.Players
+            .Where(player => !player.ManualCashOut.HasValue)
+            .Where(player => player.CashOuts.Any(row => row.Count > 0 && !denominationKeys.Contains(Money.Key(row.Denomination))))
+            .ToList();
+    }
+
+    public static void ApplyChipDenominations(PokerSession session, IEnumerable<decimal> denominations, bool preserveAffectedCashOutTotals)
+    {
+        var cleanDenominations = denominations
+            .Where(d => d > 0)
+            .Distinct()
+            .OrderBy(d => d)
+            .DefaultIfEmpty(1m)
+            .ToList();
+
+        if (preserveAffectedCashOutTotals)
+        {
+            foreach (var player in PlayersWithCashOutsOutsideDenominations(session, cleanDenominations))
+            {
+                player.ManualCashOut = PlayerCashOutTotal(player);
+            }
+        }
+
+        session.ChipDenominations = cleanDenominations;
+        SyncAllCashOutRows(session);
+    }
+
     public static void SetCashOutCount(PokerSession session, Player player, decimal denomination, int count)
     {
         SyncPlayerCashOutRows(session, player);
