@@ -1,6 +1,6 @@
-using PokerHost.Models;
+using PokerLedger.Models;
 
-namespace PokerHost.Services;
+namespace PokerLedger.Services;
 
 public sealed class ReceiptExporter
 {
@@ -94,7 +94,7 @@ public sealed class ReceiptExporter
         var cashOut = PokerCalculator.PlayerCashOutTotal(player);
         var lines = new List<string>
         {
-            "PokerHost - Player Receipt",
+            "Poker Ledger - Player Receipt",
             "Generated: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
             "",
             "Session: " + session.Name,
@@ -155,7 +155,7 @@ public sealed class ReceiptExporter
         var difference = PokerCalculator.ReconciliationDifference(session);
         var lines = new List<string>
         {
-            "PokerHost - Session Summary",
+            "Poker Ledger - Session Summary",
             "Generated: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
             "",
             "Session: " + session.Name,

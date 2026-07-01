@@ -1,8 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using PokerHost.Models;
+using PokerLedger.Models;
 
-namespace PokerHost.Services;
+namespace PokerLedger.Services;
 
 public sealed class JsonStore
 {
@@ -110,7 +110,7 @@ public sealed class JsonStore
 
         if (session is null)
         {
-            throw new InvalidOperationException("That file does not look like a PokerHost session.");
+            throw new InvalidOperationException("That file does not look like a Poker Ledger session.");
         }
 
         Normalize(session);
@@ -188,11 +188,18 @@ public sealed class JsonStore
     public AppDataBundle LoadAppDataBundleJson(string json)
     {
         var bundle = JsonSerializer.Deserialize<AppDataBundle>(json, JsonOptions);
-        if (bundle is null || !bundle.FileType.Equals("PokerHostAppData", StringComparison.OrdinalIgnoreCase))
+        if (bundle is null || !IsSupportedAppDataFileType(bundle.FileType))
         {
-            throw new InvalidOperationException("That file does not look like a PokerHost app data export.");
+            throw new InvalidOperationException("That file does not look like a Poker Ledger app data export.");
         }
         return bundle;
+    }
+
+    private static bool IsSupportedAppDataFileType(string? fileType)
+    {
+        return fileType is not null
+            && (fileType.Equals("PokerLedgerAppData", StringComparison.OrdinalIgnoreCase)
+            || fileType.Equals("PokerHostAppData", StringComparison.OrdinalIgnoreCase));
     }
 
     public void ImportAppData(AppDataBundle bundle, bool overwriteDefaults, bool overwriteSessions, bool overwriteReceipts)
@@ -329,7 +336,7 @@ public sealed class JsonStore
         var fullTarget = Path.GetFullPath(path);
         if (!fullTarget.StartsWith(fullData + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
         {
-            throw new InvalidOperationException("That file is outside the PokerHost archive.");
+            throw new InvalidOperationException("That file is outside the Poker Ledger archive.");
         }
 
         DeleteFileIfExists(fullTarget);
@@ -341,7 +348,7 @@ public sealed class JsonStore
         var fullTarget = Path.GetFullPath(path);
         if (!fullTarget.StartsWith(fullData + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
         {
-            throw new InvalidOperationException("That file is outside the PokerHost archive.");
+            throw new InvalidOperationException("That file is outside the Poker Ledger archive.");
         }
 
         if (File.Exists(fullTarget))
@@ -517,7 +524,7 @@ public sealed class JsonStore
         var fullTarget = Path.GetFullPath(Path.Combine(fullRoot, relativePath));
         if (!fullTarget.StartsWith(fullRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
         {
-            throw new InvalidOperationException("An imported file path tried to escape the PokerHost data folder.");
+            throw new InvalidOperationException("An imported file path tried to escape the Poker Ledger data folder.");
         }
         return fullTarget;
     }

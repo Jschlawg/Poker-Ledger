@@ -1,8 +1,8 @@
-using PokerHost.Models;
-using PokerHost.Services;
+using PokerLedger.Models;
+using PokerLedger.Services;
 using Xunit;
 
-namespace PokerHost.Tests;
+namespace PokerLedger.Tests;
 
 public sealed class JsonStoreTests
 {
@@ -86,5 +86,24 @@ public sealed class JsonStoreTests
         Assert.Equal(75, store.LoadSettings().DefaultBuyIn);
         Assert.True(File.Exists(originalSessionPath));
         Assert.Equal("keep me", File.ReadAllText(originalReceipt));
+    }
+
+    [Fact]
+    public void LoadAppDataBundleJson_AcceptsLegacyPokerHostExportType()
+    {
+        using var temp = new TempAppData();
+        var store = new JsonStore(temp.CreatePaths());
+        const string json = """
+            {
+              "FileType": "PokerHostAppData",
+              "Settings": {
+                "DefaultBuyIn": 25
+              }
+            }
+            """;
+
+        var bundle = store.LoadAppDataBundleJson(json);
+
+        Assert.Equal(25, bundle.Settings?.DefaultBuyIn);
     }
 }

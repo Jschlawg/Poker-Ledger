@@ -1,13 +1,13 @@
-# PokerHost Avalonia Port
+# Poker Ledger Avalonia Port
 
-This folder is the C# + Avalonia rewrite of PokerHost. Development and support are focused on Windows only.
+This folder is the C# + Avalonia rewrite of Poker Ledger. Development and support are focused on Windows only.
 
 ## Current Port Scope
 
 Implemented in the Avalonia port:
 
 - Avalonia desktop project structure for the Windows-focused app.
-- AppData-compatible storage under `PokerHost/data` and `PokerHost/receipts`.
+- AppData-compatible storage under `PokerLedger/data` and `PokerLedger/receipts`.
 - Session/player/transaction/cash-out data models matching the existing JSON shape.
 - Session archive load/save/delete and ledger viewing.
 - Setup presets with three managed slots.
@@ -32,14 +32,14 @@ Intentionally not ported from deprecated PowerShell-era features:
 Install the .NET 8 SDK first.
 
 ```powershell
-dotnet restore .\PokerHost.sln
-dotnet run --project .\src\PokerHost.Avalonia\PokerHost.Avalonia.csproj
+dotnet restore .\PokerLedger.sln
+dotnet run --project .\src\PokerLedger.Avalonia\PokerLedger.Avalonia.csproj
 ```
 
 Publish:
 
 ```powershell
-.\src\PokerHost.Avalonia\Publish-PokerHost.ps1
+.\src\PokerLedger.Avalonia\Publish-PokerLedger.ps1
 ```
 
 Published output goes under:

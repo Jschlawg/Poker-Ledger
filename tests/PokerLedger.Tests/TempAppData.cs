@@ -1,17 +1,17 @@
-using PokerHost.Services;
+using PokerLedger.Services;
 
-namespace PokerHost.Tests;
+namespace PokerLedger.Tests;
 
 internal sealed class TempAppData : IDisposable
 {
     private readonly string? _previousRoot;
 
-    public string Root { get; } = Path.Combine(Path.GetTempPath(), "PokerHost.Tests", Guid.NewGuid().ToString("N"));
+    public string Root { get; } = Path.Combine(Path.GetTempPath(), "PokerLedger.Tests", Guid.NewGuid().ToString("N"));
 
     public TempAppData()
     {
-        _previousRoot = Environment.GetEnvironmentVariable("POKERHOST_APPDATA_ROOT");
-        Environment.SetEnvironmentVariable("POKERHOST_APPDATA_ROOT", Root);
+        _previousRoot = Environment.GetEnvironmentVariable("POKERLEDGER_APPDATA_ROOT");
+        Environment.SetEnvironmentVariable("POKERLEDGER_APPDATA_ROOT", Root);
     }
 
     public AppPaths CreatePaths()
@@ -21,7 +21,7 @@ internal sealed class TempAppData : IDisposable
 
     public void Dispose()
     {
-        Environment.SetEnvironmentVariable("POKERHOST_APPDATA_ROOT", _previousRoot);
+        Environment.SetEnvironmentVariable("POKERLEDGER_APPDATA_ROOT", _previousRoot);
 
         if (!Directory.Exists(Root))
         {

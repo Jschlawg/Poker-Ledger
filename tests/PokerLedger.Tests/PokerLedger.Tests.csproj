@@ -16,6 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\PokerHost.Avalonia\PokerHost.Avalonia.csproj" />
+    <ProjectReference Include="..\..\src\PokerLedger.Avalonia\PokerLedger.Avalonia.csproj" />
   </ItemGroup>
 </Project>

@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-PokerHost is a small desktop app. Security fixes are expected to target the current main branch unless release branches are introduced later.
+Poker Ledger is a small desktop app. Security fixes are expected to target the current main branch unless release branches are introduced later.
 
 ## Reporting a Vulnerability
 
@@ -17,4 +17,4 @@ Use GitHub private vulnerability reporting if it is enabled for the repository. 
 
 ## Data Handling
 
-PokerHost stores session data and receipts locally under the user's app-data folder. Do not attach real private session logs or player receipts to public issues.
+Poker Ledger stores session data and receipts locally under the user's app-data folder. Do not attach real private session logs or player receipts to public issues.

@@ -1,6 +1,6 @@
-# PokerHost
+# Poker Ledger
 
-PokerHost is a desktop app for tracking a private poker home-game session: setup presets, players, buy-ins, rebuys, cash-outs, balance checks, session archives, and read-only text receipts.
+Poker Ledger is a desktop app for tracking a private poker home-game session: setup presets, players, buy-ins, rebuys, cash-outs, balance checks, session archives, and read-only text receipts.
 
 The app is currently built with C#/.NET 8 and Avalonia. Development and support are focused on Windows only.
 
@@ -23,26 +23,26 @@ The app is currently built with C#/.NET 8 and Avalonia. Development and support 
 ## Run From Source
 
 ```powershell
-dotnet restore .\PokerHost.sln
-dotnet run --project .\src\PokerHost.Avalonia\PokerHost.Avalonia.csproj
+dotnet restore .\PokerLedger.sln
+dotnet run --project .\src\PokerLedger.Avalonia\PokerLedger.Avalonia.csproj
 ```
 
 ## Build
 
 ```powershell
-dotnet build .\PokerHost.sln -c Release
+dotnet build .\PokerLedger.sln -c Release
 ```
 
 ## Test
 
 ```powershell
-dotnet test .\PokerHost.sln
+dotnet test .\PokerLedger.sln
 ```
 
 ## Publish
 
 ```powershell
-.\src\PokerHost.Avalonia\Publish-PokerHost.ps1
+.\src\PokerLedger.Avalonia\Publish-PokerLedger.ps1
 ```
 
 Published builds are written to:
@@ -55,13 +55,13 @@ The default publish target is `win-x64`.
 
 ## Data Storage
 
-PokerHost stores app data outside the repository:
+Poker Ledger stores app data outside the repository:
 
-- Windows: `%APPDATA%\PokerHost`
-- Test override: set `POKERHOST_APPDATA_ROOT` to a temporary folder.
+- Windows: `%APPDATA%\PokerLedger`
+- Test override: set `POKERLEDGER_APPDATA_ROOT` to a temporary folder.
 
 Do not commit generated `data/`, `receipts/`, `logs/`, `dist/`, `bin/`, or `obj/` folders.
 
 ## Legal Note
 
-PokerHost is recordkeeping software. It does not determine whether a game, payout, rake, or local setup is legal. Users are responsible for complying with their local rules and laws.
+Poker Ledger is recordkeeping software. It does not determine whether a game, payout, rake, or local setup is legal. Users are responsible for complying with their local rules and laws.

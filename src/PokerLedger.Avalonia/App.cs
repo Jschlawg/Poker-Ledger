@@ -2,9 +2,9 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Styling;
 using Avalonia.Themes.Fluent;
-using PokerHost.Views;
+using PokerLedger.Views;
 
-namespace PokerHost;
+namespace PokerLedger;
 
 public sealed class App : Application
 {

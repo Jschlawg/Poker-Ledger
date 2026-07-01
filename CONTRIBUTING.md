@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve PokerHost.
+Thanks for helping improve Poker Ledger.
 
 ## Development Setup
 
@@ -8,19 +8,19 @@ Thanks for helping improve PokerHost.
 2. Restore dependencies:
 
 ```powershell
-dotnet restore .\PokerHost.sln
+dotnet restore .\PokerLedger.sln
 ```
 
 3. Run the app:
 
 ```powershell
-dotnet run --project .\src\PokerHost.Avalonia\PokerHost.Avalonia.csproj
+dotnet run --project .\src\PokerLedger.Avalonia\PokerLedger.Avalonia.csproj
 ```
 
 4. Run tests:
 
 ```powershell
-dotnet test .\PokerHost.sln
+dotnet test .\PokerLedger.sln
 ```
 
 ## Guidelines
@@ -33,7 +33,7 @@ dotnet test .\PokerHost.sln
 
 ## Pull Request Checklist
 
-- The app builds with `dotnet build .\PokerHost.sln -c Release`.
-- Tests pass with `dotnet test .\PokerHost.sln`.
+- The app builds with `dotnet build .\PokerLedger.sln -c Release`.
+- Tests pass with `dotnet test .\PokerLedger.sln`.
 - No generated build output or local data is included.
 - User-facing behavior is documented when it changes.

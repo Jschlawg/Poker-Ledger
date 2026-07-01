@@ -1,6 +1,6 @@
-using PokerHost.Models;
+using PokerLedger.Models;
 
-namespace PokerHost.Services;
+namespace PokerLedger.Services;
 
 public static class PokerCalculator
 {

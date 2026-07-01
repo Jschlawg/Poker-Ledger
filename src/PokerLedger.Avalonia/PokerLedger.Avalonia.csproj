@@ -4,8 +4,10 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyName>PokerHost</AssemblyName>
-    <RootNamespace>PokerHost</RootNamespace>
+    <AssemblyName>PokerLedger</AssemblyName>
+    <RootNamespace>PokerLedger</RootNamespace>
+    <Title>Poker Ledger</Title>
+    <Product>Poker Ledger</Product>
     <ApplicationIcon />
   </PropertyGroup>
 

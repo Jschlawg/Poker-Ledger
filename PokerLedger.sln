@@ -1,15 +1,15 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CB307A9D-3D2F-438D-91F6-3D821449574C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokerHost.Avalonia", "src\PokerHost.Avalonia\PokerHost.Avalonia.csproj", "{A4FEEDB4-2445-459E-B92B-30EFE9EBE28F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokerLedger.Avalonia", "src\PokerLedger.Avalonia\PokerLedger.Avalonia.csproj", "{A4FEEDB4-2445-459E-B92B-30EFE9EBE28F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{9C5EC8F1-072D-4985-AA46-0BD4D538E086}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokerHost.Tests", "tests\PokerHost.Tests\PokerHost.Tests.csproj", "{144CA6C5-F5EF-4A68-87B7-CA288812223A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokerLedger.Tests", "tests\PokerLedger.Tests\PokerLedger.Tests.csproj", "{144CA6C5-F5EF-4A68-87B7-CA288812223A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

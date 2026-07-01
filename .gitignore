@@ -14,7 +14,7 @@ publish/
 *.userosscache
 *.sln.docstates
 
-# Local PokerHost app data and audit artifacts
+# Local Poker Ledger app data and audit artifacts
 data/
 receipts/
 logs/

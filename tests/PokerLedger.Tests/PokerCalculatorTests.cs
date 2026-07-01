@@ -1,8 +1,8 @@
-using PokerHost.Models;
-using PokerHost.Services;
+using PokerLedger.Models;
+using PokerLedger.Services;
 using Xunit;
 
-namespace PokerHost.Tests;
+namespace PokerLedger.Tests;
 
 public sealed class PokerCalculatorTests
 {

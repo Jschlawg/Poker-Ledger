@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace PokerHost.Models;
+namespace PokerLedger.Models;
 
 public sealed class PokerSession
 {
@@ -67,14 +67,14 @@ public sealed class AppSettings
 
 public sealed class SessionExportEnvelope
 {
-    public string FileType { get; set; } = "PokerHostSession";
+    public string FileType { get; set; } = "PokerLedgerSession";
     public DateTimeOffset ExportedAt { get; set; } = DateTimeOffset.Now;
     public PokerSession? Session { get; set; }
 }
 
 public sealed class AppDataBundle
 {
-    public string FileType { get; set; } = "PokerHostAppData";
+    public string FileType { get; set; } = "PokerLedgerAppData";
     public DateTimeOffset ExportedAt { get; set; } = DateTimeOffset.Now;
     public AppSettings? Settings { get; set; }
     public List<string>? PlayerNames { get; set; }

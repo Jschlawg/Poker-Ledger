@@ -1,7 +1,7 @@
 using Avalonia;
-using PokerHost.Services;
+using PokerLedger.Services;
 
-namespace PokerHost;
+namespace PokerLedger;
 
 internal static class Program
 {

@@ -5,13 +5,13 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$project = Join-Path $PSScriptRoot "PokerHost.Avalonia.csproj"
+$project = Join-Path $PSScriptRoot "PokerLedger.Avalonia.csproj"
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 $publishRoot = Join-Path $repoRoot "dist"
 $singleFile = if ($NoSingleFile) { "false" } else { "true" }
 
 foreach ($rid in $Runtime) {
-    $output = Join-Path $publishRoot "PokerHost-Avalonia-$rid"
+    $output = Join-Path $publishRoot "PokerLedger-Avalonia-$rid"
     & dotnet publish $project `
         -c Release `
         -r $rid `
@@ -25,7 +25,7 @@ foreach ($rid in $Runtime) {
     }
 }
 
-Write-Host "PokerHost publish complete:"
+Write-Host "Poker Ledger publish complete:"
 foreach ($rid in $Runtime) {
-    Write-Host "  $(Join-Path $publishRoot "PokerHost-Avalonia-$rid")"
+    Write-Host "  $(Join-Path $publishRoot "PokerLedger-Avalonia-$rid")"
 }

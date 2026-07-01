@@ -8,10 +8,10 @@ using Avalonia.Platform.Storage;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using System.Diagnostics;
-using PokerHost.Models;
-using PokerHost.Services;
+using PokerLedger.Models;
+using PokerLedger.Services;
 
-namespace PokerHost.Views;
+namespace PokerLedger.Views;
 
 public sealed class MainWindow : Window
 {
@@ -199,7 +199,7 @@ public sealed class MainWindow : Window
         _settings = _store.LoadSettings();
         ApplyContrastMode(_settings.ContrastMode);
 
-        Title = "PokerHost";
+        Title = "Poker Ledger";
         Width = 1180;
         Height = 760;
         MinWidth = 960;
@@ -1693,7 +1693,7 @@ public sealed class MainWindow : Window
         {
             _sessionPath = _store.SaveSession(_session, _sessionPath);
             _isDirty = false;
-            Title = "PokerHost";
+            Title = "Poker Ledger";
             RefreshArchive();
             RefreshMenuState();
             return true;
@@ -1701,7 +1701,7 @@ public sealed class MainWindow : Window
         catch (Exception ex)
         {
             LogException("SaveSession", ex);
-            _ = ShowInfo("Save Failed", "PokerHost could not save the current session.\n\n" + ex.Message);
+            _ = ShowInfo("Save Failed", "Poker Ledger could not save the current session.\n\n" + ex.Message);
             return false;
         }
     }
@@ -1715,7 +1715,7 @@ public sealed class MainWindow : Window
 
         var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title = "Import PokerHost Session JSON",
+            Title = "Import Poker Ledger Session JSON",
             AllowMultiple = false,
             FileTypeFilter = [JsonFileType]
         });
@@ -1739,7 +1739,7 @@ public sealed class MainWindow : Window
         catch (Exception ex)
         {
             LogException("ImportSessionJson", ex);
-            await ShowInfo("Import Session JSON Failed", "PokerHost could not import that session file.\n\n" + ex.Message);
+            await ShowInfo("Import Session JSON Failed", "Poker Ledger could not import that session file.\n\n" + ex.Message);
         }
     }
 
@@ -1752,7 +1752,7 @@ public sealed class MainWindow : Window
 
         var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            Title = "Export PokerHost Session JSON",
+            Title = "Export Poker Ledger Session JSON",
             SuggestedFileName = $"{JsonStore.SafeFilePart(_session.Name)}.json",
             FileTypeChoices = [JsonFileType]
         });
@@ -1770,7 +1770,7 @@ public sealed class MainWindow : Window
         catch (Exception ex)
         {
             LogException("ExportSessionJson", ex);
-            await ShowInfo("Export Session JSON Failed", "PokerHost could not export the current session.\n\n" + ex.Message);
+            await ShowInfo("Export Session JSON Failed", "Poker Ledger could not export the current session.\n\n" + ex.Message);
         }
     }
 
@@ -1790,13 +1790,13 @@ public sealed class MainWindow : Window
         catch (Exception ex)
         {
             LogException("ExportSelectedArchiveJson.Load", ex);
-            await ShowInfo("Export Session JSON Failed", "PokerHost could not read the selected archived session.\n\n" + ex.Message);
+            await ShowInfo("Export Session JSON Failed", "Poker Ledger could not read the selected archived session.\n\n" + ex.Message);
             return;
         }
 
         var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            Title = "Export PokerHost Session JSON",
+            Title = "Export Poker Ledger Session JSON",
             SuggestedFileName = $"{JsonStore.SafeFilePart(session.Name)}.json",
             FileTypeChoices = [JsonFileType]
         });
@@ -1814,7 +1814,7 @@ public sealed class MainWindow : Window
         catch (Exception ex)
         {
             LogException("ExportSelectedArchiveJson.Write", ex);
-            await ShowInfo("Export Session JSON Failed", "PokerHost could not export the selected session.\n\n" + ex.Message);
+            await ShowInfo("Export Session JSON Failed", "Poker Ledger could not export the selected session.\n\n" + ex.Message);
         }
     }
 
@@ -1834,8 +1834,8 @@ public sealed class MainWindow : Window
 
         var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            Title = "Export PokerHost App Data",
-            SuggestedFileName = $"PokerHost-app-data-{DateTime.Now:yyyyMMdd-HHmm}.json",
+            Title = "Export Poker Ledger App Data",
+            SuggestedFileName = $"poker-ledger-app-data-{DateTime.Now:yyyyMMdd-HHmm}.json",
             FileTypeChoices = [JsonFileType]
         });
         if (file is null)
@@ -1853,7 +1853,7 @@ public sealed class MainWindow : Window
         catch (Exception ex)
         {
             LogException("ExportAppData", ex);
-            await ShowInfo("Export App Data Failed", "PokerHost could not export app data.\n\n" + ex.Message);
+            await ShowInfo("Export App Data Failed", "Poker Ledger could not export app data.\n\n" + ex.Message);
         }
     }
 
@@ -1866,7 +1866,7 @@ public sealed class MainWindow : Window
 
         var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title = "Import PokerHost App Data",
+            Title = "Import Poker Ledger App Data",
             AllowMultiple = false,
             FileTypeFilter = [JsonFileType]
         });
@@ -1909,7 +1909,7 @@ public sealed class MainWindow : Window
         catch (Exception ex)
         {
             LogException("ImportAppData", ex);
-            await ShowInfo("Import App Data Failed", "PokerHost could not import app data.\n\n" + ex.Message);
+            await ShowInfo("Import App Data Failed", "Poker Ledger could not import app data.\n\n" + ex.Message);
         }
     }
 
@@ -1991,7 +1991,7 @@ public sealed class MainWindow : Window
         catch (Exception ex)
         {
             LogException("OpenFolder", ex);
-            _ = ShowInfo("Open Folder Failed", "PokerHost could not open that folder.\n\n" + ex.Message);
+            _ = ShowInfo("Open Folder Failed", "Poker Ledger could not open that folder.\n\n" + ex.Message);
         }
     }
 
@@ -2039,7 +2039,7 @@ public sealed class MainWindow : Window
         MarkDirty();
         if (!SaveSession())
         {
-            await ShowInfo("Session Saved With Warning", "Receipts were written, but PokerHost could not save the export history to the session log.");
+            await ShowInfo("Session Saved With Warning", "Receipts were written, but Poker Ledger could not save the export history to the session log.");
             return;
         }
 
@@ -2052,7 +2052,7 @@ public sealed class MainWindow : Window
             catch (Exception ex)
             {
                 LogException("ConcludeSession.Lock", ex);
-                await ShowInfo("Session Locked With Warning", "Receipts were written, but PokerHost could not mark the saved session as read-only.\n\n" + ex.Message);
+                await ShowInfo("Session Locked With Warning", "Receipts were written, but Poker Ledger could not mark the saved session as read-only.\n\n" + ex.Message);
             }
         }
 
@@ -2085,7 +2085,7 @@ public sealed class MainWindow : Window
         _isDirty = false;
         _undoStack.Clear();
         _redoStack.Clear();
-        Title = "PokerHost";
+        Title = "Poker Ledger";
         ShowPlayerScreen();
         return true;
     }
@@ -2120,7 +2120,7 @@ public sealed class MainWindow : Window
             catch (Exception ex)
             {
                 LogException("DeleteSelectedArchive", ex);
-                await ShowInfo("Delete Saved Session Failed", $"PokerHost could not delete \"{item.SessionName}\".\n\n" + ex.Message);
+                await ShowInfo("Delete Saved Session Failed", $"Poker Ledger could not delete \"{item.SessionName}\".\n\n" + ex.Message);
             }
         }
         RefreshArchive();
@@ -2736,7 +2736,7 @@ public sealed class MainWindow : Window
             return;
         }
         _isDirty = true;
-        Title = "* PokerHost";
+        Title = "* Poker Ledger";
         RefreshMenuState();
     }
 
@@ -2810,7 +2810,7 @@ public sealed class MainWindow : Window
         }
 
         e.Cancel = true;
-        var decision = await ShowSaveDiscardCancelDialog("Save the current session before closing PokerHost?");
+        var decision = await ShowSaveDiscardCancelDialog("Save the current session before closing Poker Ledger?");
         switch (decision)
         {
             case "save":
@@ -2831,7 +2831,7 @@ public sealed class MainWindow : Window
     {
         var dialog = new Window
         {
-            Title = "PokerHost",
+            Title = "Poker Ledger",
             Width = 460,
             Height = 170,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
@@ -3210,10 +3210,10 @@ public sealed class MainWindow : Window
 
     private async Task ShowAbout()
     {
-        await ShowInfo("About PokerHost", "PokerHost\nC# + Avalonia desktop port\nPersonal poker host ledger.");
+        await ShowInfo("About Poker Ledger", "Poker Ledger\nC# + Avalonia desktop port\nPersonal poker session ledger.");
     }
 
-    private static readonly FilePickerFileType JsonFileType = new("PokerHost Session JSON")
+    private static readonly FilePickerFileType JsonFileType = new("Poker Ledger Session JSON")
     {
         Patterns = ["*.json"],
         MimeTypes = ["application/json"]
