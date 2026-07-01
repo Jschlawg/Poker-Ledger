@@ -200,6 +200,7 @@ public sealed class MainWindow : Window
         ApplyContrastMode(_settings.ContrastMode);
 
         Title = "Poker Ledger";
+        Icon = new WindowIcon("Assets/PokerLedger.ico");
         Width = 1180;
         Height = 760;
         MinWidth = 960;
