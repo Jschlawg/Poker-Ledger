@@ -23,12 +23,33 @@ dotnet run --project .\src\PokerLedger.Avalonia\PokerLedger.Avalonia.csproj
 dotnet test .\PokerLedger.sln
 ```
 
+5. Build a release package:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File ".\src\PokerLedger.Avalonia\Publish-PokerLedger.ps1" -Version 1.0.0
+```
+
+Release downloads are written to:
+
+```text
+dist/releases/
+```
+
+## GitHub Releases
+
+Create and push a version tag to publish release assets automatically:
+
+```powershell
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+The release workflow builds the Windows app and attaches the versioned exe and zip to the GitHub release.
+
 ## Guidelines
 
 - Keep generated files out of commits. The repo ignores `dist/`, `bin/`, `obj/`, app data, receipts, logs, and audit screenshots.
-- Prefer small, focused changes.
 - Add or update tests for calculator, storage, receipt, import/export, and finalization behavior when touching those areas.
-- Keep UI changes consistent with the existing desktop app flow.
 - Avoid machine-specific paths in documentation or scripts.
 
 ## Pull Request Checklist

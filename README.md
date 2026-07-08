@@ -2,7 +2,18 @@
 
 Poker Ledger is a desktop app for tracking a private poker home-game session: setup presets, players, buy-ins, rebuys, cash-outs, balance checks, session archives, and read-only text receipts.
 
-The app is currently built with C#/.NET 8 and Avalonia. Development and support are focused on Windows only.
+Development and support are focused on Windows only.
+
+## Download
+
+Download the latest Windows build from the [GitHub Releases page](https://github.com/Jschlawg/Poker-Ledger/releases/latest).
+
+Use either release asset:
+
+- `PokerLedger-1.0.0-win-x64.exe` for the portable executable.
+- `PokerLedger-1.0.0-win-x64.zip` if you prefer downloading a compressed package.
+
+Poker Ledger is currently distributed as a portable app, not an installer. Download the exe, place it wherever you want, and run it from there.
 
 ## Features
 
@@ -15,68 +26,47 @@ The app is currently built with C#/.NET 8 and Avalonia. Development and support 
 - Browse saved sessions and view an in-app ledger.
 - Choose from contrast modes inspired by poker chip color palettes.
 
-## Requirements
+## Screenshots
 
-- .NET 8 SDK for development.
-- Windows 11 is the supported target.
+### Start Session
 
-## Run From Source
+![Start session screen](docs/screenshots/start-session.png)
 
-```powershell
-dotnet restore .\PokerLedger.sln
-dotnet run --project .\src\PokerLedger.Avalonia\PokerLedger.Avalonia.csproj
-```
+### Player Session
 
-## Build
+![Player session screen](docs/screenshots/player-session.png)
 
-```powershell
-dotnet build .\PokerLedger.sln -c Release
-```
+### Cash Out
 
-## Test
+![Cash out screen](docs/screenshots/cash-out.png)
 
-```powershell
-dotnet test .\PokerLedger.sln
-```
+### Ledger View
 
-## Publish
+![Ledger view screen](docs/screenshots/ledger-view.png)
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File ".\src\PokerLedger.Avalonia\Publish-PokerLedger.ps1" -Version 1.0.0
-```
+## Contrast Modes
 
-Published builds are written to:
+Poker Ledger includes multiple color palettes, all using the same gold-foil border style:
 
-```text
-dist/
-```
+- Blue / Green / Gold
+- Burgundy / Gold
+- Red / Yellow
+- White / Blue
+- Black / Yellow
 
-The default publish target is `win-x64`. Release downloads are written to:
-
-```text
-dist/releases/PokerLedger-1.0.0-win-x64.exe
-dist/releases/PokerLedger-1.0.0-win-x64.zip
-```
-
-## GitHub Releases
-
-For public downloads, use GitHub Releases rather than GitHub Packages. Create and push a version tag to publish release assets automatically:
-
-```powershell
-git tag v1.0.0
-git push origin v1.0.0
-```
-
-The release workflow builds the Windows app and attaches the versioned exe and zip to the GitHub release.
+![Contrast mode previews](docs/screenshots/contrast-modes.png)
 
 ## Data Storage
 
 Poker Ledger stores app data outside the repository:
 
 - Windows: `%APPDATA%\PokerLedger`
-- Test override: set `POKERLEDGER_APPDATA_ROOT` to a temporary folder.
 
 Do not commit generated `data/`, `receipts/`, `logs/`, `dist/`, `bin/`, or `obj/` folders.
+
+## Development
+
+Developer setup, tests, and release packaging instructions live in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Legal Note
 
