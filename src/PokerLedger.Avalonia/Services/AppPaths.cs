@@ -3,9 +3,7 @@ namespace PokerLedger.Services;
 public sealed class AppPaths
 {
     private const string AppFolderName = "PokerLedger";
-    private const string LegacyAppFolderName = "PokerHost";
     private const string AppDataOverrideVariable = "POKERLEDGER_APPDATA_ROOT";
-    private const string LegacyAppDataOverrideVariable = "POKERHOST_APPDATA_ROOT";
 
     public string AppDataRoot { get; }
     public string DataDirectory { get; }
@@ -15,25 +13,21 @@ public sealed class AppPaths
     public string PlayerProfilesPath { get; }
     public string CrashLogPath { get; }
 
-    public AppPaths()
+    public AppPaths(string? appDataRootOverride = null, string? appDataDirectoryOverride = null)
     {
-        var overrideRoot = Environment.GetEnvironmentVariable(AppDataOverrideVariable);
-        var legacyOverrideRoot = Environment.GetEnvironmentVariable(LegacyAppDataOverrideVariable);
+        var overrideRoot = string.IsNullOrWhiteSpace(appDataRootOverride)
+            ? Environment.GetEnvironmentVariable(AppDataOverrideVariable)
+            : appDataRootOverride;
         if (!string.IsNullOrWhiteSpace(overrideRoot))
         {
             AppDataRoot = overrideRoot;
         }
-        else if (!string.IsNullOrWhiteSpace(legacyOverrideRoot))
-        {
-            AppDataRoot = legacyOverrideRoot;
-        }
         else
         {
-            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var appData = string.IsNullOrWhiteSpace(appDataDirectoryOverride)
+                ? Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                : appDataDirectoryOverride;
             AppDataRoot = Path.Combine(appData, AppFolderName);
-            CopyLegacyAppDataIfNeeded(
-                Path.Combine(appData, LegacyAppFolderName),
-                AppDataRoot);
         }
 
         DataDirectory = Path.Combine(AppDataRoot, "data");
@@ -46,34 +40,5 @@ public sealed class AppPaths
         Directory.CreateDirectory(DataDirectory);
         Directory.CreateDirectory(ReceiptsDirectory);
         Directory.CreateDirectory(LogsDirectory);
-    }
-
-    private static void CopyLegacyAppDataIfNeeded(string legacyRoot, string appDataRoot)
-    {
-        if (Directory.Exists(appDataRoot) || !Directory.Exists(legacyRoot))
-        {
-            return;
-        }
-
-        CopyDirectory(legacyRoot, appDataRoot);
-    }
-
-    private static void CopyDirectory(string source, string destination)
-    {
-        Directory.CreateDirectory(destination);
-        foreach (var sourceDirectory in Directory.EnumerateDirectories(source, "*", SearchOption.AllDirectories))
-        {
-            var relativePath = Path.GetRelativePath(source, sourceDirectory);
-            Directory.CreateDirectory(Path.Combine(destination, relativePath));
-        }
-
-        foreach (var sourceFile in Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories))
-        {
-            var relativePath = Path.GetRelativePath(source, sourceFile);
-            var destinationFile = Path.Combine(destination, relativePath);
-            Directory.CreateDirectory(Path.GetDirectoryName(destinationFile)!);
-            File.Copy(sourceFile, destinationFile, overwrite: false);
-            File.SetAttributes(destinationFile, File.GetAttributes(sourceFile));
-        }
     }
 }
