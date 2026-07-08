@@ -10,8 +10,8 @@ Download the latest Windows build from the [GitHub Releases page](https://github
 
 Use either release asset:
 
-- `PokerLedger-1.0.0-win-x64.exe` for the portable executable.
-- `PokerLedger-1.0.0-win-x64.zip` if you prefer downloading a compressed package.
+- `PokerLedger-<version>-win-x64.exe` for the portable executable.
+- `PokerLedger-<version>-win-x64.zip` if you prefer downloading a compressed package.
 
 Poker Ledger is currently distributed as a portable app, not an installer. Download the exe, place it wherever you want, and run it from there.
 
@@ -53,8 +53,6 @@ Poker Ledger includes multiple color palettes, all using the same gold-foil bord
 - Red / Yellow
 - White / Blue
 - Black / Yellow
-
-![Contrast mode previews](docs/screenshots/contrast-modes.png)
 
 ## Data Storage
 

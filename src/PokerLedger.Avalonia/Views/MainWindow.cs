@@ -1179,7 +1179,7 @@ public sealed class MainWindow : Window
             }
         };
 
-        var page = new Grid { ColumnDefinitions = new ColumnDefinitions("430,*"), RowDefinitions = new RowDefinitions("Auto,*"), Margin = new Avalonia.Thickness(10), ColumnSpacing = 12, RowSpacing = 8 };
+        var page = new Grid { ColumnDefinitions = new ColumnDefinitions("690,*"), RowDefinitions = new RowDefinitions("Auto,*"), Margin = new Avalonia.Thickness(10), ColumnSpacing = 12, RowSpacing = 8 };
         page.Children.Add(Button("Back", (_, _) =>
         {
             if (activeSession)
@@ -4022,8 +4022,8 @@ public sealed class MainWindow : Window
 
             var row = new Grid
             {
-                ColumnDefinitions = new ColumnDefinitions("*,Auto,82,Auto,82"),
-                ColumnSpacing = 8,
+                ColumnDefinitions = new ColumnDefinitions("*,Auto,140,Auto,140"),
+                ColumnSpacing = 10,
                 HorizontalAlignment = HorizontalAlignment.Stretch
             };
             row.Children.Add(GridCell(new TextBlock
