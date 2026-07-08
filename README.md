@@ -10,8 +10,8 @@ Download the latest Windows build from the [GitHub Releases page](https://github
 
 Use either release asset:
 
-- `PokerLedger-<version>-win-x64.exe` for the portable executable.
-- `PokerLedger-<version>-win-x64.zip` if you prefer downloading a compressed package.
+- The `.exe` asset ending in `-win-x64.exe` for the portable executable.
+- The `.zip` asset ending in `-win-x64.zip` if you prefer downloading a compressed package.
 
 Poker Ledger is currently distributed as a portable app, not an installer. Download the exe, place it wherever you want, and run it from there.
 
