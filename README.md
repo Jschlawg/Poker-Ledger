@@ -42,7 +42,7 @@ dotnet test .\PokerLedger.sln
 ## Publish
 
 ```powershell
-.\src\PokerLedger.Avalonia\Publish-PokerLedger.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File ".\src\PokerLedger.Avalonia\Publish-PokerLedger.ps1" -Version 1.0.0
 ```
 
 Published builds are written to:
@@ -51,7 +51,23 @@ Published builds are written to:
 dist/
 ```
 
-The default publish target is `win-x64`.
+The default publish target is `win-x64`. Release downloads are written to:
+
+```text
+dist/releases/PokerLedger-1.0.0-win-x64.exe
+dist/releases/PokerLedger-1.0.0-win-x64.zip
+```
+
+## GitHub Releases
+
+For public downloads, use GitHub Releases rather than GitHub Packages. Create and push a version tag to publish release assets automatically:
+
+```powershell
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+The release workflow builds the Windows app and attaches the versioned exe and zip to the GitHub release.
 
 ## Data Storage
 
