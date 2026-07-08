@@ -20,6 +20,11 @@ if ($releaseVersion -notmatch "^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$") {
 
 $numericVersion = ($releaseVersion -split "-", 2)[0]
 $fileVersion = "$numericVersion.0"
+$checksumPath = Join-Path $releaseRoot "SHA256SUMS.txt"
+
+if (-not $NoReleasePackage -and (Test-Path -LiteralPath $releaseRoot)) {
+    Remove-Item -LiteralPath $releaseRoot -Recurse -Force
+}
 
 foreach ($rid in $Runtime) {
     $output = Join-Path $publishRoot "PokerLedger-Avalonia-$rid"
@@ -55,6 +60,11 @@ foreach ($rid in $Runtime) {
 
         Copy-Item -LiteralPath $exePath -Destination $releaseExe -Force
         Compress-Archive -LiteralPath $releaseExe -DestinationPath $releaseZip -Force
+
+        foreach ($asset in @($releaseExe, $releaseZip)) {
+            $hash = Get-FileHash -LiteralPath $asset -Algorithm SHA256
+            "{0}  {1}" -f $hash.Hash, (Split-Path -Leaf $asset) | Add-Content -LiteralPath $checksumPath
+        }
     }
 }
 
@@ -69,4 +79,5 @@ if (-not $NoReleasePackage) {
         Write-Host "  $(Join-Path $releaseRoot "PokerLedger-$releaseVersion-$rid.exe")"
         Write-Host "  $(Join-Path $releaseRoot "PokerLedger-$releaseVersion-$rid.zip")"
     }
+    Write-Host "  $checksumPath"
 }

@@ -59,9 +59,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          $releaseNotes = @"
+          Windows release for Poker Ledger $env:RELEASE_VERSION.
+
+          Assets:
+          - PokerLedger-$env:RELEASE_VERSION-win-x64.exe
+          - PokerLedger-$env:RELEASE_VERSION-win-x64.zip
+          - SHA256SUMS.txt for checksum verification
+          "@
+
           gh release view $env:RELEASE_TAG *> $null
           if ($LASTEXITCODE -eq 0) {
             gh release upload $env:RELEASE_TAG .\dist\releases\* --clobber
+            gh release edit $env:RELEASE_TAG --title "Poker Ledger $env:RELEASE_VERSION" --notes $releaseNotes
           } else {
-            gh release create $env:RELEASE_TAG .\dist\releases\* --title "Poker Ledger $env:RELEASE_VERSION" --notes "Windows release for Poker Ledger $env:RELEASE_VERSION."
+            gh release create $env:RELEASE_TAG .\dist\releases\* --title "Poker Ledger $env:RELEASE_VERSION" --notes $releaseNotes
           }

@@ -29,7 +29,7 @@ dotnet test .\PokerLedger.sln
 powershell -NoProfile -ExecutionPolicy Bypass -File ".\src\PokerLedger.Avalonia\Publish-PokerLedger.ps1" -Version 1.0.0
 ```
 
-Release downloads are written to:
+Release downloads and checksums are written to:
 
 ```text
 dist/releases/
@@ -44,7 +44,7 @@ git tag v1.0.0
 git push origin v1.0.0
 ```
 
-The release workflow builds the Windows app and attaches the versioned exe and zip to the GitHub release.
+The release workflow builds the Windows app and attaches the versioned exe, zip, and `SHA256SUMS.txt` checksum manifest to the GitHub release.
 
 ## Guidelines
 

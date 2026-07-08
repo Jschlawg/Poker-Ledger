@@ -12,8 +12,20 @@ Use either release asset:
 
 - The `.exe` asset ending in `-win-x64.exe` for the portable executable.
 - The `.zip` asset ending in `-win-x64.zip` if you prefer downloading a compressed package.
+- `SHA256SUMS.txt` if you want to verify the download checksum.
 
 Poker Ledger is currently distributed as a portable app, not an installer. Download the exe, place it wherever you want, and run it from there.
+
+Windows may show a SmartScreen warning because Poker Ledger is a new, unsigned app. Download from the official GitHub Releases page and verify the checksum if you want an extra integrity check.
+
+To verify a downloaded file in PowerShell:
+
+```powershell
+Get-FileHash .\PokerLedger-*-win-x64.exe -Algorithm SHA256
+Get-Content .\SHA256SUMS.txt
+```
+
+The hash from `Get-FileHash` should match the matching line in `SHA256SUMS.txt`.
 
 ## Features
 
